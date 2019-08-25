@@ -235,7 +235,8 @@ export default class ReactGridLayout extends React.Component<Props, State> {
       this.props.children,
       this.props.cols,
       // Legacy support for verticalCompact: false
-      this.compactType()
+      this.compactType(),
+      this.props.allowOverlap
     ),
     mounted: false,
     oldDragItem: null,
@@ -285,7 +286,8 @@ export default class ReactGridLayout extends React.Component<Props, State> {
         newLayoutBase,
         nextProps.children,
         nextProps.cols,
-        this.compactType(nextProps)
+        this.compactType(nextProps),
+        nextProps.allowOverlap
       );
       const oldLayout = this.state.layout;
       this.setState({ layout: newLayout });
@@ -454,14 +456,14 @@ export default class ReactGridLayout extends React.Component<Props, State> {
 
   onResize(i: string, w: number, h: number, { e, node }: GridResizeEvent) {
     const { layout, oldResizeItem } = this.state;
-    const { cols, preventCollision } = this.props;
+    const { cols, preventCollision, allowOverlap } = this.props;
     const l: ?LayoutItem = getLayoutItem(layout, i);
     if (!l) return;
 
     // Something like quad tree should be used
     // to find collisions faster
     let hasCollisions;
-    if (preventCollision) {
+    if (preventCollision && !allowOverlap) {
       const collisions = getAllCollisions(layout, { ...l, w, h }).filter(
         layoutItem => layoutItem.i !== l.i
       );

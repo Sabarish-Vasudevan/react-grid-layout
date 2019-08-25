@@ -78,7 +78,7 @@ var ReactGridLayout = function (_React$Component) {
 
     // We need to regenerate the layout.
     if (newLayoutBase) {
-      var newLayout = (0, _utils.synchronizeLayoutWithChildren)(newLayoutBase, nextProps.children, nextProps.cols, this.compactType(nextProps));
+      var newLayout = (0, _utils.synchronizeLayoutWithChildren)(newLayoutBase, nextProps.children, nextProps.cols, this.compactType(nextProps), nextProps.allowOverlap);
       var _oldLayout = this.state.layout;
       this.setState({ layout: newLayout });
       this.onLayoutMaybeChanged(newLayout, _oldLayout);
@@ -244,7 +244,8 @@ var ReactGridLayout = function (_React$Component) {
         oldResizeItem = _state.oldResizeItem;
     var _props2 = this.props,
         cols = _props2.cols,
-        preventCollision = _props2.preventCollision;
+        preventCollision = _props2.preventCollision,
+        allowOverlap = _props2.allowOverlap;
 
     var l = (0, _utils.getLayoutItem)(layout, i);
     if (!l) return;
@@ -252,7 +253,7 @@ var ReactGridLayout = function (_React$Component) {
     // Something like quad tree should be used
     // to find collisions faster
     var hasCollisions = void 0;
-    if (preventCollision) {
+    if (preventCollision && !allowOverlap) {
       var collisions = (0, _utils.getAllCollisions)(layout, _extends({}, l, { w: w, h: h })).filter(function (layoutItem) {
         return layoutItem.i !== l.i;
       });
@@ -607,7 +608,7 @@ var _initialiseProps = function _initialiseProps() {
     activeDrag: null,
     layout: (0, _utils.synchronizeLayoutWithChildren)(this.props.layout, this.props.children, this.props.cols,
     // Legacy support for verticalCompact: false
-    this.compactType()),
+    this.compactType(), this.props.allowOverlap),
     mounted: false,
     oldDragItem: null,
     oldLayout: null,
