@@ -478,7 +478,7 @@ function sortLayoutItemsByColRow(layout) {
  * @param  {?String} compact      Compaction option.
  * @return {Array}                Working layout.
  */
-function synchronizeLayoutWithChildren(initialLayout, children, cols, compactType) {
+function synchronizeLayoutWithChildren(initialLayout, children, cols, compactType, allowOverlap) {
   initialLayout = initialLayout || [];
 
   // Generate one layout item per child.
@@ -516,7 +516,7 @@ function synchronizeLayoutWithChildren(initialLayout, children, cols, compactTyp
 
   // Correct the layout.
   layout = correctBounds(layout, { cols: cols });
-  layout = compact(layout, compactType, cols);
+  layout = allowOverlap ? layout : compact(layout, compactType, cols);
 
   return layout;
 }
