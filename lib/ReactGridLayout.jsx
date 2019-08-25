@@ -150,6 +150,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     //
     isDraggable: PropTypes.bool,
     isResizable: PropTypes.bool,
+    allowOverlap: PropTypes.bool,
     // If true, grid items won't change position when being dragged over.
     preventCollision: PropTypes.bool,
     // Use CSS transforms instead of top/left
@@ -213,6 +214,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     margin: [10, 10],
     isDraggable: true,
     isResizable: true,
+    allowOverlap: false,
     useCSSTransforms: true,
     verticalCompact: true,
     compactType: "vertical",
@@ -249,7 +251,8 @@ export default class ReactGridLayout extends React.Component<Props, State> {
       "onDragStop",
       "onResizeStart",
       "onResize",
-      "onResizeStop"
+      "onResizeStop",
+      "considerOverlapForLayout"
     ]);
   }
 
@@ -375,7 +378,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     this.props.onDrag(layout, oldDragItem, l, placeholder, e, node);
 
     this.setState({
-      layout: compact(layout, this.compactType(), cols),
+      layout: this.considerOverlapForLayout(layout, this.compactType(), cols), //compact(layout, this.compactType(), cols),
       activeDrag: placeholder
     });
   }
@@ -411,7 +414,11 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     this.props.onDragStop(layout, oldDragItem, l, null, e, node);
 
     // Set state
-    const newLayout = compact(layout, this.compactType(), cols);
+    const newLayout = this.considerOverlapForLayout(
+      layout,
+      this.compactType(),
+      cols
+    ); //compact(layout, this.compactType(), cols);
     const { oldLayout } = this.state;
     this.setState({
       activeDrag: null,
@@ -493,7 +500,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
 
     // Re-compact the layout and set the drag placeholder.
     this.setState({
-      layout: compact(layout, this.compactType(), cols),
+      layout: this.considerOverlapForLayout(layout, this.compactType(), cols), // compact(layout, this.compactType(), cols),
       activeDrag: placeholder
     });
   }
@@ -506,7 +513,11 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     this.props.onResizeStop(layout, oldResizeItem, l, null, e, node);
 
     // Set state
-    const newLayout = compact(layout, this.compactType(), cols);
+    const newLayout = this.considerOverlapForLayout(
+      layout,
+      this.compactType(),
+      cols
+    ); //compact(layout, this.compactType(), cols);
     const { oldLayout } = this.state;
     this.setState({
       activeDrag: null,
@@ -557,6 +568,12 @@ export default class ReactGridLayout extends React.Component<Props, State> {
         <div />
       </GridItem>
     );
+  }
+
+  considerOverlapForLayout(layout, compactType, cols) {
+    return this.props.allowOverlap
+      ? layout
+      : compact(layout, compactType, cols);
   }
 
   /**
