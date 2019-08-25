@@ -372,7 +372,8 @@ export default class ReactGridLayout extends React.Component<Props, State> {
       isUserAction,
       this.props.preventCollision,
       this.compactType(),
-      cols
+      cols,
+      this.props.allowOverlap
     );
 
     this.props.onDrag(layout, oldDragItem, l, placeholder, e, node);
@@ -408,7 +409,8 @@ export default class ReactGridLayout extends React.Component<Props, State> {
       isUserAction,
       preventCollision,
       this.compactType(),
-      cols
+      cols,
+      this.props.allowOverlap
     );
 
     this.props.onDragStop(layout, oldDragItem, l, null, e, node);
