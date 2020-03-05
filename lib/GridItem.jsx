@@ -42,7 +42,6 @@ type Props = {
   useCSSTransforms?: boolean,
   usePercentages?: boolean,
 
-  resizableProps?: Object,
   className: string,
   style?: Object,
   // Draggability
@@ -60,6 +59,7 @@ type Props = {
   maxH: number,
   i: string,
 
+  resizeHandles?: string[],
   onDrag?: GridItemCallback<GridDragEvent>,
   onDragStart?: GridItemCallback<GridDragEvent>,
   onDragStop?: GridItemCallback<GridDragEvent>,
@@ -137,8 +137,6 @@ export default class GridItem extends React.Component<Props, State> {
 
     // Use CSS transforms instead of top/left
     useCSSTransforms: PropTypes.bool.isRequired,
-
-    resizableProps: PropTypes.object.isRequired,
 
     // Others
     className: PropTypes.string,
@@ -333,14 +331,12 @@ export default class GridItem extends React.Component<Props, State> {
    * @param  {Element} child    Child element.
    * @param  {Object} position  Position object (pixel values)
    * @return {Element}          Child wrapped in Resizable.
-   * @param {Object} [resizableProps] Additional props to React-Resizable
    */
   mixinResizable(
     child: ReactElement<any>,
-    position: Position,
-    resizableProps?: Object
+    position: Position
   ): ReactElement<any> {
-    const { cols, x, minW, minH, maxW, maxH } = this.props;
+    const { cols, x, minW, minH, maxW, maxH, resizeHandles } = this.props;
 
     // This is the max possible width - doesn't go to infinity because of the width of the window
     const maxWidth = this.calcPosition(0, 0, cols - x, 0).width;
@@ -362,7 +358,7 @@ export default class GridItem extends React.Component<Props, State> {
         onResizeStop={this.onResizeHandler("onResizeStop")}
         onResizeStart={this.onResizeHandler("onResizeStart")}
         onResize={this.onResizeHandler("onResize")}
-        {...resizableProps}
+        resizeHandles={resizeHandles}
       >
         {child}
       </Resizable>
@@ -468,8 +464,7 @@ export default class GridItem extends React.Component<Props, State> {
       h,
       isDraggable,
       isResizable,
-      useCSSTransforms,
-      resizableProps
+      useCSSTransforms
     } = this.props;
 
     const pos = this.calcPosition(x, y, w, h, this.state);
@@ -498,7 +493,7 @@ export default class GridItem extends React.Component<Props, State> {
     });
 
     // Resizable support. This is usually on but the user can toggle it off.
-    if (isResizable) newChild = this.mixinResizable(newChild, pos, resizableProps);
+    if (isResizable) newChild = this.mixinResizable(newChild, pos);
 
     // Draggable support. This is always on, except for with placeholders.
     if (isDraggable) newChild = this.mixinDraggable(newChild);
