@@ -60,6 +60,7 @@ export type Props = {
   isResizable: boolean,
   preventCollision: boolean,
   useCSSTransforms: boolean,
+  resizableProps?: Object,
 
   // Callbacks
   onLayoutChange: Layout => void,
@@ -156,6 +157,9 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     // Use CSS transforms instead of top/left
     useCSSTransforms: PropTypes.bool,
 
+    // Additional props for React-Resizable
+    resizableProps: PropTypes.object,
+
     //
     // Callbacks
     //
@@ -219,6 +223,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     verticalCompact: true,
     compactType: "vertical",
     preventCollision: false,
+    resizableProps: {},
     onLayoutChange: noop,
     onDragStart: noop,
     onDrag: noop,
@@ -547,7 +552,8 @@ export default class ReactGridLayout extends React.Component<Props, State> {
       containerPadding,
       rowHeight,
       maxRows,
-      useCSSTransforms
+      useCSSTransforms,
+      resizableProps
     } = this.props;
 
     // {...this.state.activeDrag} is pretty slow, actually
@@ -568,6 +574,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
         isDraggable={false}
         isResizable={false}
         useCSSTransforms={useCSSTransforms}
+        resizableProps={resizableProps}
       >
         <div />
       </GridItem>
@@ -599,6 +606,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
       isDraggable,
       isResizable,
       useCSSTransforms,
+      resizableProps,
       draggableCancel,
       draggableHandle
     } = this.props;
@@ -632,6 +640,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
         isResizable={resizable}
         useCSSTransforms={useCSSTransforms && mounted}
         usePercentages={!mounted}
+        resizableProps={resizableProps}
         w={l.w}
         h={l.h}
         x={l.x}
